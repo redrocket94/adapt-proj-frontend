@@ -15,12 +15,24 @@ class MagicEightBall extends React.Component {
 
     ask() {
         if (this.state.userInput) {
-            fetch('https://api.coindesk.com/v1/bpi/currentprice.json')
-                .then(response => response.json())
-                .then(data => this.setState({
-                    msg: data['bpi']['USD']['rate'],
-                    userInput: ''
-                }));
+            let headers = new Headers();
+            headers.append('Access-Control-Allow-Origin', '*');
+
+            const myRequest = new Request('http://localhost:8000/api/game/play/1/666', {
+                mode: 'cors',
+                method: 'GET',
+            });
+
+            fetch(myRequest)
+                .then(response => {
+                    fetch(response.url).then(response => response.json()).then(data => {
+                        console.log(data['game_reward']['title']);
+                        this.setState({
+                            msg: data['game_reward']['title'],
+                            userInput: ''
+                        })
+                    }).catch(error => console.error(error));
+                }).catch(error => console.error(error));
         }
     }
 
@@ -49,7 +61,7 @@ class MagicEightBall extends React.Component {
                     <div className="ball-black-outer">
                         <div className="ball-white-inner">
                             <div>
-                                { (this.state.msg !== '') ?
+                                {(this.state.msg !== '') ?
                                     this.state.msg
                                     :
                                     <div className='eight'>8</div>
