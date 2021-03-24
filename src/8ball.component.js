@@ -18,19 +18,18 @@ class MagicEightBall extends React.Component {
 
         let id = uuidv4();
 
-        const myRequest = new Request(`http://localhost:8000/api/game/play/1/${id}`, {
+        const myRequest = new Request(`http://0.0.0.0:80/api/game/play/1/${id}`, {
             mode: 'cors',
             method: 'GET',
         });
 
         fetch(myRequest)
-            .then(response => {
-                fetch(response.url).then(response => response.json()).then(data => {
-                    console.log(data);
-                    this.setState({
-                        msg: 'has_won: ' + data['has_won'],
-                    })
-                }).catch(error => console.error(error));
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                this.setState({
+                    msg: 'has_won: ' + data['has_won'],
+                })
             }).catch(error => console.error(error));
     }
 
