@@ -1,4 +1,5 @@
 import React from 'react'
+import { v4 as uuidv4 } from 'uuid';
 import './8ball.styles.sass'
 
 class MagicEightBall extends React.Component {
@@ -6,40 +7,31 @@ class MagicEightBall extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            userInput: '',
             msg: ''
         }
         this.ask = this.ask.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
     ask() {
-        if (this.state.userInput) {
-            let headers = new Headers();
-            headers.append('Access-Control-Allow-Origin', '*');
+        let headers = new Headers();
+        headers.append('Access-Control-Allow-Origin', '*');
 
-            const myRequest = new Request('http://localhost:8000/api/game/play/1/666', {
-                mode: 'cors',
-                method: 'GET',
-            });
+        let id = uuidv4();
 
-            fetch(myRequest)
-                .then(response => {
-                    fetch(response.url).then(response => response.json()).then(data => {
-                        console.log(data['game_reward']['title']);
-                        this.setState({
-                            msg: data['game_reward']['title'],
-                            userInput: ''
-                        })
-                    }).catch(error => console.error(error));
-                }).catch(error => console.error(error));
-        }
-    }
-
-    handleChange(event) {
-        this.setState({
-            userInput: event.target.value
+        const myRequest = new Request(`http://localhost:8000/api/game/play/1/${id}`, {
+            mode: 'cors',
+            method: 'GET',
         });
+
+        fetch(myRequest)
+            .then(response => {
+                fetch(response.url).then(response => response.json()).then(data => {
+                    console.log(data);
+                    this.setState({
+                        msg: 'has_won: ' + data['has_won'],
+                    })
+                }).catch(error => console.error(error));
+            }).catch(error => console.error(error));
     }
 
     render() {
@@ -47,13 +39,8 @@ class MagicEightBall extends React.Component {
             <div>
 
                 <div className="question-container">
-                    <input
-                        type="text"
-                        value={this.state.userInput}
-                        onChange={this.handleChange}
-                    />
                     <button onClick={this.ask}>
-                        Ask the Magic Eight Ball!
+                        Play Game!
                     </button>
                 </div>
 
